@@ -43,7 +43,7 @@
 'use strict';
 
 /* Cambia este valor en cada publicación (v1 → v2 → v3 …). */
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 
 const PREFIJO_CACHE = 'pwa-kimberly-';
 const CACHE_ACTUAL = PREFIJO_CACHE + CACHE_VERSION;
@@ -65,8 +65,8 @@ const RECURSOS_ESENCIALES = [
   './fuentes/barlow-condensed-latin-700-normal.woff2',
   './fuentes/source-sans-3-latin-400-normal.woff2',
   './fuentes/source-sans-3-latin-600-normal.woff2',
-  './imagenes/logo-cbtis260.png',
-  './imagenes/icono-instagram.png',
+  './imagenes/logos/logo-cbtis260.png',
+  './imagenes/logos/icono-instagram.png',
   './imagenes/iconos-pwa/icon-192.png',
   './imagenes/iconos-pwa/icon-512.png',
   './imagenes/iconos-pwa/icon-maskable-192.png',
