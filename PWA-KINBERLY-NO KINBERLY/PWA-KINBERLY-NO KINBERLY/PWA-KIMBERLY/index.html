@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inicio | Reconocimiento de imágenes · CBTIS 260</title>
+  <meta name="description" content="Proyecto escolar del CBTIS 260: aplicación web progresiva (PWA) que clasifica imágenes con un modelo entrenado en Google Teachable Machine.">
+
+  <!-- Configuración de la PWA (rutas relativas para funcionar en GitHub Pages) -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#9b1b1f">
+  <link rel="icon" type="image/png" sizes="32x32" href="imagenes/iconos-pwa/favicon-32.png">
+  <link rel="apple-touch-icon" href="imagenes/iconos-pwa/apple-touch-icon.png">
+
+  <!-- Fuentes autoalojadas (se precargan para evitar parpadeos de texto) -->
+  <link rel="preload" href="fuentes/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fuentes/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+
+  <!-- ============ ENCABEZADO Y NAVEGACIÓN ============ -->
+  <header class="encabezado">
+    <div class="contenedor encabezado__interior">
+      <a class="marca" href="index.html" aria-label="CBTIS 260, ir al inicio">
+        <img class="marca__logo" src="imagenes/logo-cbtis260.png" width="148" height="148" alt="Logotipo del CBTIS 260">
+        <span class="marca__texto">
+          <span class="marca__nombre">Centro de Bachillerato Tecnológico Industrial y de Servicios No. 260</span>
+          <span class="marca__proyecto">Proyecto: reconocimiento de imágenes con IA</span>
+        </span>
+      </a>
+
+      <nav class="navegacion" aria-label="Navegación principal">
+        <ul>
+          <li><a href="index.html" aria-current="page">Inicio</a></li>
+          <li><a href="pruebas.html">Solución y pruebas</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Aviso de nueva versión (lo muestra js/app.js cuando el service worker se actualiza) -->
+  <div class="aviso-actualizacion" id="aviso-actualizacion" role="status" hidden>
+    <p>Hay una nueva versión de la aplicación disponible.</p>
+    <button type="button" class="boton boton--claro" id="boton-actualizar">Actualizar ahora</button>
+  </div>
+
+  <main id="contenido">
+
+    <!-- ============ PRESENTACIÓN ============ -->
+    <section class="portada" aria-labelledby="titulo-portada">
+      <div class="contenedor portada__interior">
+        <div class="portada__texto">
+          <h1 id="titulo-portada">Reconocimiento de imágenes con inteligencia artificial</h1>
+          <p class="portada__resumen">
+            Aplicación web progresiva desarrollada en el CBTIS 260. Utiliza un modelo entrenado en
+            Google Teachable Machine para clasificar fotografías directamente en el navegador y
+            mostrar qué tan seguro está el modelo de cada resultado.
+          </p>
+          <div class="acciones">
+            <a class="boton boton--primario" href="pruebas.html">Ir a la página de pruebas</a>
+            <a class="boton boton--contorno-claro" href="#problematica">Conocer la problemática</a>
+          </div>
+        </div>
+
+        <!-- Engranaje decorativo (SVG propio; no es el logotipo oficial) -->
+        <svg class="portada__engranaje" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+          <path fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"
+            d="M88 8h24l4 22a72 72 0 0 1 17 7l19-13 17 17-13 19a72 72 0 0 1 7 17l22 4v24l-22 4a72 72 0 0 1-7 17l13 19-17 17-19-13a72 72 0 0 1-17 7l-4 22H88l-4-22a72 72 0 0 1-17-7l-19 13-17-17 13-19a72 72 0 0 1-7-17l-22-4V88l22-4a72 72 0 0 1 7-17L31 48l17-17 19 13a72 72 0 0 1 17-7z"/>
+          <circle cx="100" cy="100" r="38" fill="none" stroke="currentColor" stroke-width="5"/>
+          <circle cx="100" cy="100" r="12" fill="none" stroke="currentColor" stroke-width="5"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ============ QUÉ ES TEACHABLE MACHINE ============ -->
+    <section class="seccion" aria-labelledby="titulo-tm">
+      <div class="contenedor dos-columnas">
+        <div class="texto-largo">
+          <h2 id="titulo-tm">¿Qué es Teachable Machine?</h2>
+          <p>
+            Teachable Machine es una herramienta gratuita de Google que permite entrenar modelos de
+            aprendizaje automático sin escribir código. La persona que lo entrena reúne ejemplos
+            (en este proyecto, fotografías), los organiza en grupos llamados <strong>clases</strong>
+            y la herramienta ajusta un modelo capaz de distinguirlas.
+          </p>
+          <p>
+            El modelo resultante puede exportarse en formato TensorFlow.js. Esto permite ejecutarlo
+            dentro de una página web, en el propio dispositivo de quien la usa, sin necesidad de
+            enviar las imágenes a un servidor.
+          </p>
+        </div>
+
+        <aside class="ficha" aria-label="Ficha técnica del proyecto">
+          <h3>Ficha técnica</h3>
+          <dl>
+            <div><dt>Entrenamiento</dt><dd>Google Teachable Machine, proyecto de imágenes</dd></div>
+            <div><dt>Ejecución</dt><dd>TensorFlow.js, dentro del navegador</dd></div>
+            <div><dt>Imagen de entrada</dt><dd>224 × 224 píxeles</dd></div>
+            <div><dt>Salida</dt><dd>Un porcentaje de confianza por cada clase</dd></div>
+          </dl>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ PROBLEMÁTICA ============ -->
+    <section class="seccion seccion--tenue" id="problematica" aria-labelledby="titulo-problematica">
+      <div class="contenedor texto-largo">
+        <h2 id="titulo-problematica">La problemática</h2>
+        <p>
+          Para una persona, reconocer a alguien en una fotografía es una tarea inmediata. Para un
+          sistema informático, en cambio, implica aprender a partir de ejemplos. Este proyecto plantea
+          una situación concreta: dada una imagen, determinar si corresponde a Kimberly, a una
+          persona distinta o a un contenido diferente, e indicar qué tan segura es esa respuesta.
+        </p>
+        <p>
+          El proyecto también busca que quienes lo prueben comprendan una idea importante: un modelo
+          de inteligencia artificial no «sabe» quién aparece en una imagen. Solo compara patrones que
+          aprendió durante su entrenamiento, por lo que puede equivocarse. Por esa razón, la aplicación
+          presenta siempre el porcentaje de confianza y nunca una respuesta absoluta.
+        </p>
+        <p>
+          La pregunta que guía el desarrollo es la siguiente: ¿cómo llevar un modelo de clasificación de
+          imágenes a una aplicación que cualquier persona pueda abrir desde su celular o su computadora,
+          sin instalar programas complejos?
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ JUSTIFICACIÓN DE LA PWA ============ -->
+    <section class="seccion" aria-labelledby="titulo-justificacion">
+      <div class="contenedor">
+        <h2 id="titulo-justificacion">Justificación: ¿por qué una PWA?</h2>
+        <p class="introduccion">
+          Una Progressive Web App (PWA) es una página web con características de aplicación. Se eligió
+          este formato por las siguientes razones.
+        </p>
+
+        <div class="rejilla-razones">
+          <article class="razon">
+            <h3>Un solo código para todos los dispositivos</h3>
+            <p>La misma aplicación funciona en celulares Android, tabletas y computadoras, desde cualquier navegador moderno.</p>
+          </article>
+          <article class="razon">
+            <h3>Instalable</h3>
+            <p>Puede agregarse a la pantalla de inicio y abrirse como una aplicación, sin pasar por una tienda de aplicaciones.</p>
+          </article>
+          <article class="razon">
+            <h3>Uso sin conexión</h3>
+            <p>Después de la primera visita con Internet, la interfaz, las bibliotecas y el modelo quedan guardados en el dispositivo mediante un service worker.</p>
+          </article>
+          <article class="razon">
+            <h3>Las imágenes se quedan en el dispositivo</h3>
+            <p>El análisis se realiza en el navegador. Esta aplicación no envía las fotografías a ningún servidor.</p>
+          </article>
+          <article class="razon">
+            <h3>Fácil de publicar y actualizar</h3>
+            <p>Al ser archivos estáticos, se aloja gratuitamente en GitHub Pages y las nuevas versiones se distribuyen al actualizar el repositorio.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ OBJETIVO GENERAL ============ -->
+    <section class="seccion seccion--oscura" aria-labelledby="titulo-objetivo">
+      <div class="contenedor texto-largo">
+        <h2 id="titulo-objetivo">Objetivo general</h2>
+        <p class="objetivo">
+          Desarrollar una aplicación web progresiva que utilice un modelo de Teachable Machine para
+          clasificar imágenes y mostrar el resultado junto con el porcentaje de confianza de cada clase,
+          aplicando conocimientos de programación web e inteligencia artificial.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ CÓMO FUNCIONA ============ -->
+    <section class="seccion" aria-labelledby="titulo-funcionamiento">
+      <div class="contenedor">
+        <h2 id="titulo-funcionamiento">¿Cómo reconoce imágenes la inteligencia artificial?</h2>
+        <p class="introduccion">El proceso completo tiene cuatro etapas, desde el entrenamiento hasta el resultado que se muestra en pantalla.</p>
+
+        <ol class="pasos">
+          <li>
+            <h3>Entrenamiento</h3>
+            <p>Se reúnen fotografías de ejemplo para cada clase. Teachable Machine las utiliza para ajustar una red neuronal preentrenada (MobileNet) a esta tarea específica.</p>
+          </li>
+          <li>
+            <h3>Preparación de la imagen</h3>
+            <p>Cuando se prueba una imagen, la aplicación toma su parte central y la reduce a 224 × 224 píxeles, que es el tamaño que el modelo espera recibir.</p>
+          </li>
+          <li>
+            <h3>Predicción</h3>
+            <p>La red neuronal analiza la imagen y calcula, para cada clase, un valor entre 0 y 1 que indica qué tanto se parece a los ejemplos con los que aprendió.</p>
+          </li>
+          <li>
+            <h3>Resultado</h3>
+            <p>Los valores se presentan como porcentajes. La clase con el porcentaje más alto es la que el modelo considera más probable, pero no garantiza que sea correcta.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ ALCANCES Y LIMITACIONES ============ -->
+    <section class="seccion seccion--tenue" aria-labelledby="titulo-limites">
+      <div class="contenedor texto-largo">
+        <h2 id="titulo-limites">Alcances y limitaciones</h2>
+        <ul class="lista-limites">
+          <li>El resultado es una estimación estadística. No constituye una identificación con certeza absoluta.</li>
+          <li>La calidad de las respuestas depende de las fotografías usadas en el entrenamiento: su cantidad, variedad, iluminación y ángulos.</li>
+          <li>Una imagen muy distinta de las que vio el modelo, por ejemplo con poca luz o con la cara cubierta, puede producir resultados poco confiables.</li>
+          <li>Esta aplicación tiene fines educativos. No debe utilizarse para controlar accesos, verificar identidades ni tomar decisiones sobre personas.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ LLAMADA A LA ACCIÓN ============ -->
+    <section class="seccion llamada" aria-labelledby="titulo-llamada">
+      <div class="contenedor llamada__interior">
+        <div>
+          <h2 id="titulo-llamada">Prueba el modelo</h2>
+          <p>Carga una fotografía o toma una con la cámara y revisa los porcentajes de confianza.</p>
+        </div>
+        <a class="boton boton--primario boton--grande" href="pruebas.html">Ir a la página de pruebas</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ PIE DE PÁGINA ============ -->
+  <footer class="pie">
+    <div class="contenedor pie__interior">
+      <div class="pie__texto">
+        <p class="pie__derechos">Todos los derechos reservados</p>
+        <p>CBTIS 260. Proyecto escolar de reconocimiento de imágenes.</p>
+      </div>
+
+      <ul class="pie__enlaces" aria-label="Contacto y redes sociales">
+        <li>
+          <a class="icono-enlace" href="https://www.instagram.com/kim_gvglz/" target="_blank" rel="noopener noreferrer"
+             aria-label="Instagram de kim_gvglz (se abre en una pestaña nueva)" title="Instagram">
+            <img src="imagenes/icono-instagram.png" width="130" height="130" alt="">
+          </a>
+        </li>
+        <li>
+          <a class="icono-enlace" href="mailto:velezgonzalezkinberly@gmail.com"
+             aria-label="Enviar un correo a velezgonzalezkinberly@gmail.com" title="Correo electrónico">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path d="M3.5 7l8.5 6.5L20.5 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="js/app.js" defer></script>
+</body>
+</html>
