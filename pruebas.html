@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solución y pruebas | Reconocimiento de imágenes · CBTIS 260</title>
+  <meta name="description" content="Prueba el modelo de Teachable Machine: carga una imagen o toma una fotografía y consulta el porcentaje de confianza de cada clase.">
+
+  <!-- Configuración de la PWA (rutas relativas para funcionar en GitHub Pages) -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#9b1b1f">
+  <link rel="icon" type="image/png" sizes="32x32" href="imagenes/iconos-pwa/favicon-32.png">
+  <link rel="apple-touch-icon" href="imagenes/iconos-pwa/apple-touch-icon.png">
+
+  <link rel="preload" href="fuentes/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fuentes/source-sans-3-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+
+  <!-- ============ ENCABEZADO Y NAVEGACIÓN ============ -->
+  <header class="encabezado">
+    <div class="contenedor encabezado__interior">
+      <a class="marca" href="index.html" aria-label="CBTIS 260, ir al inicio">
+        <img class="marca__logo" src="imagenes/logo-cbtis260.png" width="148" height="148" alt="Logotipo del CBTIS 260">
+        <span class="marca__texto">
+          <span class="marca__nombre">Centro de Bachillerato Tecnológico Industrial y de Servicios No. 260</span>
+          <span class="marca__proyecto">Proyecto: reconocimiento de imágenes con IA</span>
+        </span>
+      </a>
+
+      <nav class="navegacion" aria-label="Navegación principal">
+        <ul>
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="pruebas.html" aria-current="page">Solución y pruebas</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="aviso-actualizacion" id="aviso-actualizacion" role="status" hidden>
+    <p>Hay una nueva versión de la aplicación disponible.</p>
+    <button type="button" class="boton boton--claro" id="boton-actualizar">Actualizar ahora</button>
+  </div>
+
+  <main id="contenido">
+
+    <!-- ============ ENCABEZADO DE LA PÁGINA ============ -->
+    <section class="portada portada--compacta" aria-labelledby="titulo-pagina">
+      <div class="contenedor">
+        <h1 id="titulo-pagina">Solución y pruebas del modelo</h1>
+        <p class="portada__resumen">
+          Aquí se utiliza el modelo entrenado en Teachable Machine. Elige una imagen, ejecuta el análisis
+          y revisa el porcentaje de confianza de cada clase.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ LA SOLUCIÓN ============ -->
+    <section class="seccion" aria-labelledby="titulo-solucion">
+      <div class="contenedor dos-columnas">
+        <div class="texto-largo">
+          <h2 id="titulo-solucion">Cómo se utiliza el modelo</h2>
+          <p>
+            La solución es una página web que carga el modelo exportado desde Teachable Machine, lo
+            ejecuta con TensorFlow.js y muestra los resultados sin depender de un servidor de análisis.
+            Los archivos del modelo están en la carpeta <code>modelo/</code> del proyecto.
+          </p>
+          <ol class="pasos-simples">
+            <li>Al abrir esta página, la aplicación carga el modelo y sus metadatos (los nombres de las clases) y espera a que esté listo.</li>
+            <li>Tú eliges una imagen o tomas una fotografía. Se muestra una vista previa.</li>
+            <li>Al pulsar «Analizar imagen», el modelo calcula la probabilidad de cada clase.</li>
+            <li>La aplicación muestra todas las clases con su porcentaje de confianza.</li>
+          </ol>
+        </div>
+
+        <!-- Estado del modelo: lo actualiza js/app.js -->
+        <aside class="estado-modelo" id="estado-modelo" data-estado="cargando" aria-labelledby="titulo-estado">
+          <h3 id="titulo-estado">Estado del modelo</h3>
+          <p class="estado-modelo__texto" id="texto-estado-modelo" role="status">Cargando el modelo…</p>
+          <p class="estado-modelo__clases" id="clases-modelo" hidden></p>
+          <p class="estado-modelo__nota" id="nota-clases" hidden></p>
+          <button type="button" class="boton boton--contorno" id="boton-reintentar-modelo" hidden>Reintentar la carga</button>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ PANEL DE PRUEBAS ============ -->
+    <section class="seccion seccion--tenue" aria-labelledby="titulo-panel">
+      <div class="contenedor">
+        <h2 id="titulo-panel">Probar el modelo</h2>
+
+        <!-- Mensajes de error, aviso e información (accesibles para lectores de pantalla) -->
+        <div id="mensajes" class="mensajes" aria-live="polite"></div>
+
+        <div class="panel" id="panel-pruebas">
+
+          <!-- ---------- Columna 1: imagen ---------- -->
+          <section class="tarjeta" aria-labelledby="titulo-imagen">
+            <h3 id="titulo-imagen">1. Elige una imagen</h3>
+
+            <div class="acciones acciones--apiladas-movil">
+              <button type="button" class="boton boton--primario" id="boton-elegir">Cargar imagen del dispositivo</button>
+              <button type="button" class="boton boton--contorno" id="boton-camara">Tomar fotografía con la cámara</button>
+            </div>
+            <input type="file" id="entrada-archivo" accept="image/*" hidden>
+
+            <!-- Cámara (se muestra solo al pulsar «Tomar fotografía») -->
+            <div class="camara" id="camara" hidden>
+              <video id="video-camara" playsinline muted></video>
+              <div class="acciones acciones--apiladas-movil">
+                <button type="button" class="boton boton--primario" id="boton-capturar">Capturar fotografía</button>
+                <button type="button" class="boton boton--contorno" id="boton-cambiar-camara">Cambiar cámara</button>
+                <button type="button" class="boton boton--texto" id="boton-cerrar-camara">Cerrar cámara</button>
+              </div>
+            </div>
+
+            <figure class="vista-previa" id="vista-previa">
+              <img id="imagen-vista-previa" alt="Vista previa de la imagen seleccionada" hidden>
+              <p class="vista-previa__vacia" id="vista-previa-vacia">Aún no hay una imagen seleccionada.</p>
+              <figcaption id="descripcion-imagen" hidden></figcaption>
+            </figure>
+
+            <div class="acciones acciones--apiladas-movil">
+              <button type="button" class="boton boton--primario boton--grande" id="boton-predecir">Analizar imagen</button>
+              <button type="button" class="boton boton--texto" id="boton-limpiar">Quitar imagen</button>
+            </div>
+          </section>
+
+          <!-- ---------- Columna 2: resultado ---------- -->
+          <section class="tarjeta tarjeta--resultado" aria-labelledby="titulo-resultado">
+            <h3 id="titulo-resultado">2. Resultado</h3>
+
+            <p class="resultado__vacio" id="resultado-vacio">
+              Cuando analices una imagen, aquí aparecerán la clase más probable y el porcentaje de confianza de cada clase.
+            </p>
+
+            <div id="resultado-contenido" hidden aria-live="polite">
+              <p class="resultado__etiqueta">Clase más probable</p>
+              <p class="resultado__principal" id="resultado-principal"></p>
+              <p class="resultado__cifra" id="resultado-cifra"></p>
+
+              <ul class="barras" id="lista-resultados"></ul>
+
+              <p class="resultado__nota" id="resultado-nota">
+                Es una estimación del modelo, no una identificación con certeza absoluta.
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <!-- Lienzo auxiliar para capturar fotogramas de la cámara (no se muestra) -->
+        <canvas id="canvas-captura" hidden></canvas>
+      </div>
+    </section>
+
+    <!-- ============ GUÍA DE LAS TRES PRUEBAS ============ -->
+    <section class="seccion" aria-labelledby="titulo-guia">
+      <div class="contenedor">
+        <h2 id="titulo-guia">Guía para realizar las tres pruebas</h2>
+        <p class="introduccion">
+          Para evaluar el modelo, prueba una imagen de cada tipo y comprueba que la aplicación muestre
+          el resultado y el porcentaje de confianza de todas las clases.
+        </p>
+
+        <div class="casos">
+          <article class="caso">
+            <h3>Prueba 1: imagen de Kimberly</h3>
+            <p>Selecciona una fotografía de Kimberly. Se espera que la clase <strong>Kimberly</strong> obtenga el porcentaje más alto.</p>
+          </article>
+          <article class="caso">
+            <h3>Prueba 2: imagen que no es de Kimberly</h3>
+            <p>Selecciona una imagen que no sea de Kimberly. Se espera que la clase <strong>No es Kimberly</strong> obtenga el porcentaje más alto.</p>
+          </article>
+          <article class="caso">
+            <h3>Prueba 3: fotografía de otra persona</h3>
+            <p>Selecciona una fotografía de otra persona. Se espera que la clase <strong>Otra persona</strong> obtenga el porcentaje más alto.</p>
+          </article>
+        </div>
+
+        <p class="nota-guia">
+          La clase «Otra persona» aparece únicamente si el modelo exportado la incluye. El apartado
+          «Estado del modelo» muestra qué clases tiene el modelo cargado actualmente. El archivo
+          <code>README.md</code> explica cómo organizar las clases en Teachable Machine.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ PIE DE PÁGINA ============ -->
+  <footer class="pie">
+    <div class="contenedor pie__interior">
+      <div class="pie__texto">
+        <p class="pie__derechos">Todos los derechos reservados</p>
+        <p>CBTIS 260. Proyecto escolar de reconocimiento de imágenes.</p>
+      </div>
+
+      <ul class="pie__enlaces" aria-label="Contacto y redes sociales">
+        <li>
+          <a class="icono-enlace" href="https://www.instagram.com/kim_gvglz/" target="_blank" rel="noopener noreferrer"
+             aria-label="Instagram de kim_gvglz (se abre en una pestaña nueva)" title="Instagram">
+            <img src="imagenes/icono-instagram.png" width="130" height="130" alt="">
+          </a>
+        </li>
+        <li>
+          <a class="icono-enlace" href="mailto:velezgonzalezkinberly@gmail.com"
+             aria-label="Enviar un correo a velezgonzalezkinberly@gmail.com" title="Correo electrónico">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path d="M3.5 7l8.5 6.5L20.5 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </footer>
+
+  <!--
+    Orden de carga importante:
+    1) TensorFlow.js  2) Teachable Machine Image (necesita TensorFlow.js)  3) app.js
+    Las bibliotecas están en js/lib/ para que funcionen sin conexión.
+  -->
+  <script src="js/lib/tf.min.js"></script>
+  <script src="js/lib/teachablemachine-image.min.js"></script>
+  <script src="js/app.js" defer></script>
+</body>
+</html>
